@@ -15,20 +15,20 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $true)]
         [string] $ConnectionBroker,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string] $SQLServer,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [ValidateLength(1, 256)]
         [string] $DatabaseName,
 
         [Parameter(Mandatory = $false)]
         [string] $DatabaseFilePath,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [ValidateLength(1, 256)]
         [string] $ClientAccessName,
 
@@ -66,20 +66,20 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $true)]
         [string] $ConnectionBroker,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string] $SQLServer,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [ValidateLength(1, 256)]
         [string] $DatabaseName,
 
         [Parameter(Mandatory = $false)]
         [string] $DatabaseFilePath,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [ValidateLength(1, 256)]
         [string] $ClientAccessName,
 
@@ -123,20 +123,20 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [Parameter(Mandatory = $false)]
+        [Parameter(Mandatory = $true)]
         [string] $ConnectionBroker,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string] $SQLServer,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [ValidateLength(1, 256)]
         [string] $DatabaseName,
 
         [Parameter(Mandatory = $false)]
         [string] $DatabaseFilePath,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [ValidateLength(1, 256)]
         [string] $ClientAccessName,
 
