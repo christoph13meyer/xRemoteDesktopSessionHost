@@ -15,29 +15,43 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string] $ConnectionBroker,
+
         [Parameter(Mandatory = $true)]
         [string] $SQLServer,
+
         [Parameter(Mandatory = $true)]
-        [ValidateLength(1,256)]
+        [ValidateLength(1, 256)]
         [string] $DatabaseName,
-        [Parameter(Mandatory = $true)]
+
+        [Parameter(Mandatory = $false)]
         [string] $DatabaseFilePath,
+
         [Parameter(Mandatory = $true)]
-        [ValidateLength(1,256)]
-        [string] $ClientAccessName
+        [ValidateLength(1, 256)]
+        [string] $ClientAccessName,
+
+        [Parameter(Mandatory = $false)]
+        [string]
+        $SqlServerDriver = 'SQL Server Native Client 11.0'
     )
     Write-Verbose "Getting information about RD Connection Broker High Availability Mode."
+
+    if ([string]::IsNullOrWhiteSpace($ConnectionBroker))
+    {
+        $ConnectionBroker = $localhost
+    }
 
     $ConnectionBrokerHighAvailability = Get-RDConnectionBrokerHighAvailability -ConnectionBroker $ConnectionBroker -ErrorAction SilentlyContinue
 
     @{
-        ConnectionBroker = $ConnectionBrokerHighAvailability.ConnectionBroker
-        ActiveManagementServer = $ConnectionBrokerHighAvailability.ActiveManagementServer
-        ClientAccessName = $ConnectionBrokerHighAvailability.ClientAccessName
+        ConnectionBroker         = $ConnectionBrokerHighAvailability.ConnectionBroker
+        ActiveManagementServer   = $ConnectionBrokerHighAvailability.ActiveManagementServer
+        ClientAccessName         = $ConnectionBrokerHighAvailability.ClientAccessName
         DatabaseConnectionString = $ConnectionBrokerHighAvailability.DatabaseConnectionString
-        DatabaseFilePath = $ConnectionBrokerHighAvailability.DatabaseFilePath
+        DatabaseFilePath         = $ConnectionBrokerHighAvailability.DatabaseFilePath
+        SqlServerDriver          = $SqlServerDriver
     }
 
 }
@@ -52,24 +66,49 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string] $ConnectionBroker,
+
         [Parameter(Mandatory = $true)]
         [string] $SQLServer,
+
         [Parameter(Mandatory = $true)]
-        [ValidateLength(1,256)]
+        [ValidateLength(1, 256)]
         [string] $DatabaseName,
-        [Parameter(Mandatory = $true)]
+
+        [Parameter(Mandatory = $false)]
         [string] $DatabaseFilePath,
+
         [Parameter(Mandatory = $true)]
-        [ValidateLength(1,256)]
-        [string] $ClientAccessName
+        [ValidateLength(1, 256)]
+        [string] $ClientAccessName,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $SqlServerDriver = 'SQL Server Native Client 11.0'
     )
     Write-Verbose "Set RD Connection Broker for high availability mode."
+
+    if ([string]::IsNullOrWhiteSpace($ConnectionBroker))
+    {
+        $ConnectionBroker = $localhost
+    }
+
+    $parameters = @{
+        ConnectionBroker         = $ConnectionBroker
+        DatabaseConnectionString = "DRIVER=$SqlServerDriver;SERVER=$SQLServer;Trusted_Connection=Yes;APP=Remote Desktop Services Connection Broker;Database=$DatabaseName"
+        ClientAccessName         = $ClientAccessName
+    }
     
+    if (-not [string]::IsNullOrWhiteSpace($DatabaseFilePath))
+    {
+        $parameters['DatabaseFilePath'] = $DatabaseFilePath
+    }
+
     if ($localhost -eq $ConnectionBroker)
     {
-        Set-RDConnectionBrokerHighAvailability -ConnectionBroker $ConnectionBroker -DatabaseConnectionString "DRIVER=SQL Server Native Client 11.0;SERVER=$SQLServer;Trusted_Connection=Yes;APP=Remote Desktop Services Connection Broker;Database=$DatabaseName" -DatabaseFilePath $DatabaseFilePath -ClientAccessName $ClientAccessName -Verbose
+        Set-RDConnectionBrokerHighAvailability @parameters
     }
 
 }
@@ -84,20 +123,34 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string] $ConnectionBroker,
+
         [Parameter(Mandatory = $true)]
         [string] $SQLServer,
+
         [Parameter(Mandatory = $true)]
-        [ValidateLength(1,256)]
+        [ValidateLength(1, 256)]
         [string] $DatabaseName,
-        [Parameter(Mandatory = $true)]
+
+        [Parameter(Mandatory = $false)]
         [string] $DatabaseFilePath,
+
         [Parameter(Mandatory = $true)]
-        [ValidateLength(1,256)]
-        [string] $ClientAccessName
+        [ValidateLength(1, 256)]
+        [string] $ClientAccessName,
+
+        [Parameter(Mandatory = $false)]
+        [string]
+        $SqlServerDriver = 'SQL Server Native Client 11.0'
     )
     Write-Verbose "Checking for existence of RD Connection Broker for high availability mode."
+
+    if ([string]::IsNullOrWhiteSpace($ConnectionBroker))
+    {
+        $ConnectionBroker = $localhost
+    }
+    
     $null -ne (Get-TargetResource -ConnectionBroker $ConnectionBroker).ActiveManagementServer
 }
 
